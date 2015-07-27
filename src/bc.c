@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/bclib.h"
-#include "../include/ballistics.h"
+#include "bclib.h"
+#include "ballistics.h"
 
 int ballistic_coefficient(void)
 {
@@ -152,6 +152,7 @@ int trajectory (void)
 	int md,mr,df,yi,x;
 	double* sln=NULL;
 	int spbr[5];
+	int scope;
 	
 	printf("\n\n\t * Trajectory Calculator * \n");
 	
@@ -257,16 +258,23 @@ int trajectory (void)
 		if (wa >= 0 && wa <= 360) break;
 		printf("Wind Angle must be between 0 and 360 deg!\n");
 	}
-	
-	while(1)
+
+	printf("\nScope (Y/N) : ");
+	sgets(buffer,80);
+	scope = 0;
+	if (buffer[0] == 'Y' || buffer[0] == 'y')
 	{
-		printf("\nEnter # Clicks to Move Scope 1 inch @ 100 yrds : ");
-		sgets(buffer,80);
-		cl = atof(buffer);
-		if (cl >= 0) break;
-		printf("# Clicks must not be < 0!\n");
+		while(1)
+		{	
+			printf("\nEnter # Clicks to Move Scope 1 inch @ 100 yrds : ");
+			sgets(buffer,80);
+			cl = atof(buffer);
+			if (cl >= 0) break;
+			printf("# Clicks must not be < 0!\n");
+		}
+		scope = 1;	
 	}
-	
+
 	while(1)
 	{
 		printf("\nEnter Vitals Diameter (in): ");
@@ -377,50 +385,53 @@ int trajectory (void)
 		printf("%3.2f\n",GetTime(sln,x));
 	} 
 	printf("\n\n\n");
-	printf("\t * Scope Adjustments *\n");
-	printf("\n\nDIST\tVMOA\tVCLKS\tVMILS\tHMOA\tHCLKS\tHMILS\n");
-	
-	for (x=yi;x<=mr;x+=yi)
+	if (scope)
 	{
-		vcl=GetMOA(sln,x)*cl;
-		hcl=GetWindageMOA(sln,x)*cl;
-		vmoa = GetMOA(sln,x);
-		vmils = GetMOA(sln,x)*0.2908;
-		hmoa = GetWindageMOA(sln,x);
-		hmils = GetWindageMOA(sln,x)*0.2908;
+		printf("\t * Scope Adjustments *\n");
+		printf("\n\nDIST\tVMOA\tVCLKS\tVMILS\tHMOA\tHCLKS\tHMILS\n");
+	
+		for (x=yi;x<=mr;x+=yi)
+		{
+			vcl=GetMOA(sln,x)*cl;
+			hcl=GetWindageMOA(sln,x)*cl;
+			vmoa = GetMOA(sln,x);
+			vmils = GetMOA(sln,x)*0.2908;
+			hmoa = GetWindageMOA(sln,x);
+			hmils = GetWindageMOA(sln,x)*0.2908;
 		
-		printf("%d\t",x);
-		if (vmoa > 0)
-			printf("U%3.1f\t",vmoa);
-		else
-			printf("D%3.1f\t",fabs(vmoa));
+			printf("%d\t",x);
+			if (vmoa > 0)
+				printf("U%3.1f\t",vmoa);
+			else
+				printf("D%3.1f\t",fabs(vmoa));
 				
-		if (vcl > 0)
-			printf("U%3.0f\t",vcl);
-		else
-			printf("D%3.0f\t",fabs(vcl));
+			if (vcl > 0)
+				printf("U%3.0f\t",vcl);
+			else
+				printf("D%3.0f\t",fabs(vcl));
 			
-		if (vmils > 0)
-			printf("U%3.1f\t",vmils);
-		else
-			printf("D%3.1f\t",fabs(vmils));
+			if (vmils > 0)
+				printf("U%3.1f\t",vmils);
+			else
+				printf("D%3.1f\t",fabs(vmils));
 			
-		if (hmoa > 0)
-			printf("R%3.1f\t",hmoa);
-		else
-			printf("L%3.1f\t",fabs(hmoa));
+			if (hmoa > 0)
+				printf("R%3.1f\t",hmoa);
+			else
+				printf("L%3.1f\t",fabs(hmoa));
 			
-		if (hcl > 0)
-			printf("R%3.0f\t",hcl);
-		else
-			printf("L%3.0f\t",fabs(hcl));
+			if (hcl > 0)
+				printf("R%3.0f\t",hcl);
+			else
+				printf("L%3.0f\t",fabs(hcl));
 			
-		if (hmils > 0)	
-			printf("R%3.1f\t",hmils);
-		else
-			printf("L%3.1f\t",fabs(hmils));
-		printf("\n");
-	} 
+			if (hmils > 0)	
+				printf("R%3.1f\t",hmils);
+			else
+				printf("L%3.1f\t",fabs(hmils));
+			printf("\n");
+		}
+	}	 
 	
 	return 0;
 }
