@@ -11,6 +11,8 @@ mkdir m4
 
 autoreconf --install
 
+./configure
+
 make
 
 run with ./ballistics
