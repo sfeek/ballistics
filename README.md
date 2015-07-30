@@ -9,7 +9,7 @@ To build make sure automake and gcc is installed
 
 mkdir m4
 
-autoconf --install
+autoreconf --install
 
 make
 
