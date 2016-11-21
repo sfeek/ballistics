@@ -453,8 +453,6 @@ int pbr(int DragFunction, double DragCoefficient, double Vi, double SightHeight,
 	double ZAngle=0;
 	double Step=10;
 	
-	int result=0;
-	
 	int quit=0;
 
 	double zero=-1;
@@ -462,7 +460,6 @@ int pbr(int DragFunction, double DragCoefficient, double Vi, double SightHeight,
 	
 	int vertex_keep=0;
 	double y_vertex=0;
-	double x_vertex=0;
 	
 	double min_pbr_range=0;
 	int min_pbr_keep=0;
@@ -546,14 +543,13 @@ int pbr(int DragFunction, double DragCoefficient, double Vi, double SightHeight,
 				}
 				
 				
-				if (fabs(vy)>fabs(3*vx)) { result=PBR_ERROR; break; }
-				if (n>=__BCOMP_MAXRANGE__+1) { result=PBR_ERROR; break;}
+				if (fabs(vy)>fabs(3*vx)) { break; }
+				if (n>=__BCOMP_MAXRANGE__+1) { break; }
 				
 
 				// The PBR will be maximum at the point where the vertex is 1/2 vital zone size.
 				if (vy<0 && vertex_keep==0){
 					y_vertex=y;
-					x_vertex=x;
 					vertex_keep=1;
 				}
 				

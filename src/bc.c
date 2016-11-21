@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "bclib.h"
-#include "ballistics.h"
+#include "../include/bclib.h"
+#include "../include/ballistics.h"
 
 int ballistic_coefficient(void)
 {
 	char buffer[80];
 	double dc,iv,at,tp,bp,rh,tv;
-	double drv,drd,md;
+	double drv,drd;
 	double guess_current,guess_high,guess_low;
 	int atm,df;
 	double* sln=NULL;
@@ -122,7 +122,7 @@ int ballistic_coefficient(void)
 		
 		sln=NULL;
 		
-		md = SolveAll(df,dc, iv, 0, 0, 0, 0, 0, &sln);
+		SolveAll(df,dc, iv, 0, 0, 0, 0, 0, &sln);
 		tv = GetVelocity(sln,drd);
 				
 		if (fabs(tv-drv) < 2) break;
@@ -147,7 +147,7 @@ int trajectory (void)
 {
 	char buffer[80];
 	
-	double dc,pw,iv,zr,sh,sa,wv,wa,at,tp,bp,rh,za,tv,cl,vcl,hcl,vd;
+	double dc,pw,iv,zr,sh,sa,wv,wa,at,tp,bp,rh,za,tv,cl=0.0,vcl,hcl,vd;
 	double vmoa,vmils,hmoa,hmils;
 	int md,mr,df,yi,x;
 	double* sln=NULL;
