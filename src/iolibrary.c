@@ -3,25 +3,52 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <errno.h>
+#include <limits.h>
 
-/*Safe function to get strings from the user*/
-void sgets (char *line , int size)
+/* Gracefully get a string - *** Remember to free() the returned string when finished with it! *** */
+char *getstring (const char *display)
 {
-	int i;
+	char c;
+	size_t len = 2; 
+	size_t i=0;	
+
+	printf("%s", display);
 	
-	fflush (stdin);
-		
-	for (i = 0 ; i < size ; ++i)
+	char *strData = malloc (2);
+	if (strData == NULL) 
 	{
-		int ch = fgetc(stdin);
-		if (ch == '\n' || ch == EOF)
-		{
-			break;
-		}
-		line[i] = ch;
+		printf("\nOut of Memory Error!\n");
+		return NULL;
 	}
 
-	line[i] = '\0';
+	while ((c=fgetc(stdin)) != '\n') 
+	{
+		strData[i++] = c;
+		
+		if (i > INT_MAX) 
+		{
+			printf("\nString Overflow Error!\n");
+			return NULL;
+		}
+
+		if (i >= len) 
+		{
+			len *= 2;
+
+			strData = realloc (strData, len);
+			
+			if (strData == NULL) 
+			{
+				printf("\nOut of Memory Error!\n");
+				return NULL;
+			}
+		}
+	}
+
+	strData[i] = 0;
+
+	return strData;
 }
 
 /* Make sure string is really a double */
@@ -29,88 +56,85 @@ int stringtodouble (const char *str, double *v)
 {
 	char *ptr;
 	
-	*v = strtod (str, &ptr);
+	errno = 0;
 	
-	if (str != ptr && *ptr == '\0') return 1;
+	*v = strtod (str, &ptr);
 
-	return 0;
+	if (errno == ERANGE) 
+	{	
+		printf ("\nNumber Overflow/Underflow Error!\n");
+		return EXIT_FAILURE;
+	}
+	
+	if (str == ptr) 
+	{
+		printf ("\nInvalid Number Conversion Error!\n");
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }
 
 /* Make sure string is really an integer */
 int stringtoint (const char *str, int *v) 
 {
 	char *ptr;
+
+	errno = 0;
 	
 	*v = (int) strtol (str, &ptr, 10);
-	
-	if (str != ptr && *ptr == '\0') return 1;
 
-	return 0;
+	if (errno == ERANGE) 
+	{	
+		printf ("\nNumber Overflow/Underflow Error!\n");
+		return EXIT_FAILURE;
+	}
+	
+	if (str == ptr) 
+	{
+		printf ("\nInvalid Number Conversion Error!\n");
+		return EXIT_FAILURE;
+	}
+
+	return EXIT_SUCCESS;
 }
 
 /* Gracefully get a double or decimal value */
 double getdouble (const char *display)
 {
-	char buffer[30];
+	char *buffer;
 	double value;
 
-	do 
+	while (1) 
 	{
-		printf ("%s", display);
+		buffer = getstring (display);
 
-		sgets (buffer, 30);
+		if (stringtodouble (buffer, &value) == EXIT_SUCCESS) break;
+
+		if (buffer) free (buffer);
 	} 
-	while (!stringtodouble(buffer, &value));
+
+	if (buffer) free (buffer);
 
 	return value;
-}
-
-/* Gracefully get a string - *** Remember to free() the returned string when finished with it! *** */
-char *getstring (const char *display, int length)
-{
-	char *buffer;
-
-	if (!(buffer = calloc (length + 2, sizeof (char))))
-	{
-			return NULL;
-	}
-
-	printf ("%s", display);
-
-	sgets (buffer, length + 1);
-	
-	return buffer;
 }
 
 /* Gracefully get an integer value */
 int getint (const char *display)
 {
-	char buffer[30];
+	char *buffer;
 	int value;
 
-	do 
+	while (1) 
 	{
-		printf ("%s", display);
+		buffer = getstring (display);
 
-		sgets (buffer, 30);
+		if (stringtoint (buffer, &value) == EXIT_SUCCESS) break;
+
+		if (buffer) free (buffer);
 	} 
-	while (!stringtoint(buffer, &value));
+
+	if (buffer) free (buffer);
 
 	return value;
-}
-
-/* Wait for the user to Press ENTER */
-void PauseForEnterKey (void)
-{
-	char ch;
-
-	printf("\n*** Press [ENTER] For Main Menu ***\n");
-
-	while (1)
-	{
-		ch=fgetc(stdin);
-		if (ch == '\n') break;
-	}
-
-	return;
 }
