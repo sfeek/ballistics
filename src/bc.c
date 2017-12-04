@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/bclib.h"
+#include "../include/iolibrary.h"
 #include "../include/ballistics.h"
 
 int ballistic_coefficient(void)
 {
-	char buffer[80];
+	char *str;
 	double dc,iv,at,tp,bp,rh,tv;
 	double drv,drd;
 	double guess_current,guess_high,guess_low;
@@ -16,27 +16,24 @@ int ballistic_coefficient(void)
 	
 	while(1)
 	{
-		printf("\nEnter Muzzle Velocity (ft/s) : ");
-		sgets(buffer,80);
-		iv = atof(buffer);
+		iv = getdouble ( "\nEnter Muzzle Velocity (ft/s) : " );
+
 		if (iv > 0) break;
 		printf("Muzzle Velocity must be > 0!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Down Range Velocity (ft/s) : ");
-		sgets(buffer,80);
-		drv = atof(buffer);
+		drv = getdouble ( "\nEnter Down Range Velocity (ft/s) : " );
+
 		if (drv > 0 || drv < iv) break;
 		printf("Down Range Velocity must be > 0 and < Muzzle Velocity!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Down Range Distance (yds) : ");
-		sgets(buffer,80);
-		drd = atof(buffer);
+		drd = getdouble ( "\nEnter Down Range Distance (yds) : " );
+
 		if (drd > 0) break;
 		printf("Down Range Distance must be > 0!\n");
 	}
@@ -51,11 +48,9 @@ int ballistic_coefficient(void)
 		printf("G6 (flatbase, 6 calibers long secant ogive)\n");
 		printf("G7 (long 7.5deg boat-tail, 10 calibers tangent ogive)\n");
 		printf("G8 (flatbase, 10 calibers long secant ogive)\n");
-		
-		
-		printf("\nEnter Drag Model 0,1,2,5,6,7 or 8 : ");
-		sgets(buffer,80);
-		df = atoi(buffer);
+				
+		df = getint ( "\nEnter Drag Model 0,1,2,5,6,7 or 8 : " );
+
 		if (df == 0) break;
 		if (df == 1) break;
 		if (df == 2) break;
@@ -63,52 +58,52 @@ int ballistic_coefficient(void)
 		if (df == 6) break;
 		if (df == 7) break;
 		if (df == 8) break;
+
 		printf("Drag Model must be 0,1,2,5,6,7 or 8!\n");
 	}
 	
 	atm = 0;
 	
-	printf("\nCorrect for Atmospheric Conditions (Y/N) : ");
-	sgets(buffer,80);
-	if (buffer[0] == 'Y' || buffer[0] == 'y')
+	str = getstring( "\nCorrect for Atmospheric Conditions (Y/N) : ", 1 );
+	
+	if (str[0] == 'Y' || str[0] == 'y')
 	{
 		atm = 1;
 		while(1)
 		{
-			printf("\nEnter Altitude (ft) : ");
-			sgets(buffer,80);
-			at = atof(buffer);
+			at = getdouble ( "\nEnter Altitude (ft) : " );
+
 			if (at >= 0) break;
 			printf("Altitude must be >= 0!\n");
 		}
 
 		while(1)
 		{
-			printf("\nEnter Temperature (F) : ");
-			sgets(buffer,80);
-			tp = atof(buffer);
+			tp = getdouble ( "\nEnter Temperature (F) : " );
+
 			if (tp > -100) break;
 			printf("Temperature must be > -100 deg!\n");
 		}
 
 		while(1)
 		{
-			printf("\nEnter Barometric Pressure (in Hg) : ");
-			sgets(buffer,80);
-			bp = atof(buffer);
+			bp = getdouble ( "\nEnter Barometric Pressure (in Hg) : " );
+
 			if (bp > 20 && bp < 35) break;
 			printf("Barometric Pressure must be > 20 and < 35!\n");
 		}
 
 		while(1)
 		{
-			printf("\nEnter Relative Humidity (%%) : ");
-			sgets(buffer,80);
-			rh = atof(buffer)/100;
-			if (rh >= 0 && rh <= 100) break;
+			rh = getdouble ( "\nEnter Relative Humidity (%%) : " );
+
+			rh = rh/100;
+			if (rh >= 0 && rh <= 1) break;
 			printf("Relative Humidity must be between 0 and 100%%!\n");
 		}
 	}
+
+	if (str) free (str);
 	
 	guess_current = 0.5;
 	guess_low = 0.0;
@@ -145,8 +140,7 @@ int ballistic_coefficient(void)
 
 int trajectory (void)
 {
-	char buffer[80];
-	
+	char *str;
 	double dc,pw,iv,zr,sh,sa,wv,wa,at,tp,bp,rh,za,tv,cl=0.0,vcl,hcl,vd;
 	double vmoa,vmils,hmoa,hmils;
 	int md,mr,df,yi,x;
@@ -158,9 +152,8 @@ int trajectory (void)
 	
 	while(1)
 	{
-		printf("\nEnter Ballistic Coefficient : ");
-		sgets(buffer,80);
-		dc = atof(buffer);
+		dc = getdouble( "\nEnter Ballistic Coefficient : " );
+
 		if (dc > 0 && dc < 2) break;
 		printf("Ballistic Coefficient must > 0 and < 2!\n");
 	}
@@ -176,10 +169,8 @@ int trajectory (void)
 		printf("G7 (long 7.5deg boat-tail, 10 calibers tangent ogive)\n");
 		printf("G8 (flatbase, 10 calibers long secant ogive)\n");
 		
-		
-		printf("\nEnter Drag Model 0,1,2,5,6,7 or 8 : ");
-		sgets(buffer,80);
-		df = atoi(buffer);
+		df = getint ("\nEnter Drag Model 0,1,2,5,6,7 or 8 : ");
+
 		if (df == 0) break;
 		if (df == 1) break;
 		if (df == 2) break;
@@ -187,41 +178,38 @@ int trajectory (void)
 		if (df == 6) break;
 		if (df == 7) break;
 		if (df == 8) break;
+
 		printf("Drag Model must be 0,1,2,5,6,7 or 8!\n");
 	}
 		
 	while(1)
 	{
-		printf("\nEnter Bullet Weight (gr) : ");
-		sgets(buffer,80);
-		pw = atof(buffer);
+		pw = getdouble("\nEnter Bullet Weight (gr) : ");
+
 		if (pw >= 1) break;
 		printf("Bullet Weight must be >= 1 grain!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Muzzle Velocity (ft/s) : ");
-		sgets(buffer,80);
-		iv = atof(buffer);
+		iv = getdouble("\nEnter Muzzle Velocity (ft/s) : ");
+
 		if (iv > 0) break;
 		printf("Muzzle Velocity must be > 0!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Zero Range (yds) : ");
-		sgets(buffer,80);
-		zr = atof(buffer);
+		zr = getdouble("\nEnter Zero Range (yds) : ");
+
 		if (zr >= 1) break;
 		printf("Zero Range must be >= 1 yard!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Sight Height Above Bore (in) : ");
-		sgets(buffer,80);
-		sh = atof(buffer);
+		sh = getdouble("\nEnter Sight Height Above Bore (in) : ");
+
 		if (sh > 0) break;
 		printf("Sight Height must be > 0!\n");
 	}
@@ -232,17 +220,17 @@ int trajectory (void)
 		printf("\n\t+90\n");
 		printf("\t 0 \n");
 		printf("\t-90\n :");
-		sgets(buffer,80);
-		sa = atof(buffer);
+
+		sa = getdouble("");
+
 		if (sa >= -90 && sa <= 90) break;
 		printf("Shooting Angle must be between -90 and +90!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Wind Velocity (mph) : ");
-		sgets(buffer,80);
-		wv = atof(buffer);
+		wv = getdouble("\nEnter Wind Velocity (mph) : ");
+;
 		if (wv >= 0) break;
 		printf("Wind Velocity cannot be < 0!\n");
 	}
@@ -253,79 +241,80 @@ int trajectory (void)
 		printf("\n\t 0\n");
 		printf("270\t\t90\n");
 		printf("\t180\n :");
-		sgets(buffer,80);
-		wa = atof(buffer);
+
+		wa = getdouble("");
+
 		if (wa >= 0 && wa <= 360) break;
 		printf("Wind Angle must be between 0 and 360 deg!\n");
 	}
 
-	printf("\nScope (Y/N) : ");
-	sgets(buffer,80);
+	str = getstring("\nScope (Y/N) : ",1);
+
 	scope = 0;
-	if (buffer[0] == 'Y' || buffer[0] == 'y')
+	if (str[0] == 'Y' || str[0] == 'y')
 	{
 		while(1)
 		{	
-			printf("\nEnter # Clicks to Move Scope 1 inch @ 100 yrds : ");
-			sgets(buffer,80);
-			cl = atof(buffer);
+			cl = getdouble("\nEnter # Clicks to Move Scope 1 inch @ 100 yrds : ");
+
 			if (cl >= 0) break;
 			printf("# Clicks must not be < 0!\n");
 		}
 		scope = 1;	
 	}
 
+	if (str) free(str);
+
 	while(1)
 	{
-		printf("\nEnter Vitals Diameter (in): ");
-		sgets(buffer,80);
-		vd = atof(buffer);
+		vd = getdouble("\nEnter Vitals Diameter (in): ");
+
 		if (vd >= 1) break;
 		printf("Vitals Diameter must be at least 1 inch!\n");
 	}
 		
-	printf("\nCorrect for Atmospheric Conditions (Y/N) : ");
-	sgets(buffer,80);
-	if (buffer[0] == 'Y' || buffer[0] == 'y')
+	str = getstring("\nCorrect for Atmospheric Conditions (Y/N) : ",1);
+
+	if (str[0] == 'Y' || str[0] == 'y')
 	{
 		while(1)
 		{
-			printf("\nEnter Altitude (ft) : ");
-			sgets(buffer,80);
-			at = atof(buffer);
+			at = getdouble("\nEnter Altitude (ft) : ");
+;
 			if (at >= 0) break;
 			printf("Altitude must be >= 0!\n");
 		}
 
 		while(1)
 		{
-			printf("\nEnter Temperature (F) : ");
-			sgets(buffer,80);
-			tp = atof(buffer);
+			tp = getdouble("\nEnter Temperature (F) : ");
+
 			if (tp > -100) break;
 			printf("Temperature must be > -100 deg!\n");
 		}
 
 		while(1)
 		{
-			printf("\nEnter Barometric Pressure (in Hg) : ");
-			sgets(buffer,80);
-			bp = atof(buffer);
+			bp = getdouble("\nEnter Barometric Pressure (in Hg) : ");
+
 			if (bp > 20 && bp < 35) break;
 			printf("Barometric Pressure must be > 20 and < 35!\n");
 		}
 
 		while(1)
 		{
-			printf("\nEnter Relative Humidity (%%) : ");
-			sgets(buffer,80);
-			rh = atof(buffer)/100;
-			if (rh >= 0 && rh <= 100) break;
+			rh = getdouble("\nEnter Relative Humidity (%%) : ");
+
+			rh = rh/100;
+
+			if (rh >= 0 && rh <= 1) break;
 			printf("Relative Humidity must be between 0 and 100%%!\n");
 		}
 		
 		dc = AtmCorrect(dc, at, bp, tp, rh);
 	}
+
+	if (str) free(str);
 	
 	za = ZeroAngle(df, dc, iv, sh, zr, 0.0);
 		
@@ -334,17 +323,16 @@ int trajectory (void)
 	while(1)
 	{
 		printf("\nEnter Maximum Range (yds) up to %d yds for Table : ",md);
-		sgets(buffer,80);
-		mr = atoi(buffer);
+		mr = getint("");
+
 		if (mr > 0 && mr < md) break;
 		printf("Maximum Table Range must be > 0 and < %d yds!\n",md);
 	}
 	
 	while(1)
 	{
-		printf("\nEnter Yardage Increment (yds) for Table : ");
-		sgets(buffer,80);
-		yi = atoi(buffer);
+		yi = getint("\nEnter Yardage Increment (yds) for Table : ");
+
 		if (yi >= 1 && yi < md) break;
 		printf("Yardage Increment must be between 1 and %d yds!\n",md);
 	}
@@ -438,25 +426,22 @@ int trajectory (void)
 
 int mildot(void)
 {
-	char buffer[80];
 	double tsize,mildots,distance;
 	
 	printf("\n\n\t * Distance to Target from Mil-Dots * \n");
 	
 	while(1)
 	{
-		printf("\nTarget Size (in) : ");
-		sgets(buffer,80);
-		tsize = atof(buffer);
+		tsize = getdouble("\nTarget Size (in) : ");
+
 		if (tsize > 0) break;
 		printf("Targe Size must be > 0!\n");
 	}
 	
 	while(1)
 	{
-		printf("\n# of Mil-Dots: ");
-		sgets(buffer,80);
-		mildots = atof(buffer);
+		mildots = getdouble("\n# of Mil-Dots: ");
+
 		if (mildots > 0) break;
 		printf("# of Mil-Dots must be > 0!\n");
 	}
@@ -471,34 +456,30 @@ int mildot(void)
 
 int twist_rate(void)
 {
-	char buffer[80];
 	double tr,bl,v,d;
 	
 	printf("\n\n\t * Optimum Twist Rate * \n");
 	
 	while(1)
 	{
-		printf("\nBore Groove Diameter (in) : ");
-		sgets(buffer,80);
-		d = atof(buffer);
+		d = getdouble("\nBore Groove Diameter (in) : ");
+
 		if (d > 0) break;
 		printf("Bore Groove Diameter must be > 0!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nBullet Length (in) : ");
-		sgets(buffer,80);
-		bl = atof(buffer);
+		bl = getdouble("\nBullet Length (in) : ");
+
 		if (bl > 0) break;
 		printf("Bullet Length must be > 0!\n");
 	}
 	
 	while(1)
 	{
-		printf("\nBullet Velocity (fps) : ");
-		sgets(buffer,80);
-		v = atof(buffer);
+		v = getdouble("\nBullet Velocity (fps) : ");
+
 		if (v > 0) break;
 		printf("Bullet Velocity must be > 0!\n");
 	}
@@ -508,13 +489,11 @@ int twist_rate(void)
 	printf("\n\nOptimum Twist Rate : 1 twist in %3.1f in\n",tr);
 	
 	return 0;
-
 }
 
 
 int main(void)
 {
-	char buffer[3];
 	int selection,done;
 	done = 0;
 	
@@ -527,10 +506,7 @@ int main(void)
 		printf(" 4. Calculate Optimum Twist Rate\n");
 	
 		printf("\n 99. Exit\n\n");
-		printf("Enter Selection: ");
-		
-		sgets(buffer,sizeof buffer);
-		selection = atoi(buffer);
+		selection = getint("Enter Selection: ");
 		
 		printf("\n\n");
 		

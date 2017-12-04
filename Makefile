@@ -26,7 +26,7 @@ LFLAGS = -L../lib
 LIBS = -lm
 
 # define the C source files
-SRCS = src/bc.c src/ballistics.c src/bclib.c
+SRCS = src/bc.c src/ballistics.c src/iolibrary.c
 
 # define the C object files 
 #
