@@ -508,6 +508,54 @@ int twist_rate(void)
 	return 0;
 }
 
+int fpf(void)
+{
+	double fpf,me;
+	double m,x,nx,v;
+
+	printf("\n\n\t * Muzzle Energy and Feek Power Factor * \n");
+
+	while(1)
+	{
+		v = getdouble("\nBullet Velocity (fps) : ");
+
+		if (v > 0) break;
+		printf("Bullet Velocity must be > 0!\n");
+	}
+
+	while(1)
+	{
+		m = getdouble("\nBullet Weight (grn) : ");
+
+		if (m > 0) break;
+		printf("Bullet Weight must be > 0!\n");
+	}
+
+	while(1)
+	{
+		nx = getdouble("\nBullet Diameter (in) : ");
+
+		if (nx > 0) break;
+		printf("Bullet Diameter must be > 0!\n");
+	}
+
+	while(1)
+	{
+		x = getdouble("\nBullet Expanded Diameter (in) : ");
+
+		if (x >= nx) break;
+		printf("Bullet Expanded must be >= Unexpanded!\n");
+	}
+
+	fpf = m*((x/nx-1)*0.7+1)*v*v/4504350;
+	me = m*v*v/450435;
+
+	printf("\nMuzzle Energy: %3.0f lb/ft", me);
+	printf("\nFeek Power Factor: %3.0f\n\n", fpf);
+
+	return 0;
+}
+
 
 int main(void)
 {
@@ -521,6 +569,7 @@ int main(void)
 		printf (" 2. Calculate Ballistic Coefficient\n");
 		printf (" 3. Calculate Distance to Target from Mil-Dots\n");
 		printf (" 4. Calculate Optimum Twist Rate\n");
+		printf (" 5. Muzzle Energy and Feek Power Factor\n");
 	
 		printf ("\n 99. Exit\n\n");
 		selection = getint("Enter Selection: ");
@@ -546,6 +595,11 @@ int main(void)
 			
 			case 4:
 				twist_rate();
+				PauseForEnterKey();
+				break;
+			
+			case 5:
+				fpf();
 				PauseForEnterKey();
 				break;
 					
