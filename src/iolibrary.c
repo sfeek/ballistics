@@ -104,37 +104,36 @@ double getdouble (const char *display)
 {
 	char *buffer;
 	double value;
+	int rtn;
 
 	while (1) 
 	{
 		buffer = getstring (display);
 
-		if (stringtodouble (buffer, &value) == EXIT_SUCCESS) break;
+		rtn = stringtodouble (buffer, &value);
 
-		if (buffer) free (buffer);
-	} 
+		free (buffer);
 
-	if (buffer) free (buffer);
-
-	return value;
+		if (rtn == EXIT_SUCCESS) return value;
+	}
 }
+
 
 /* Gracefully get an integer value */
 int getint (const char *display)
 {
 	char *buffer;
 	int value;
+	int rtn;
 
 	while (1) 
 	{
 		buffer = getstring (display);
 
-		if (stringtoint (buffer, &value) == EXIT_SUCCESS) break;
+		rtn = stringtoint (buffer, &value);
 
-		if (buffer) free (buffer);
+		free (buffer);
+
+		if (rtn == EXIT_SUCCESS) return value;
 	} 
-
-	if (buffer) free (buffer);
-
-	return value;
 }
