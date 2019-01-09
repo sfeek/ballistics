@@ -333,7 +333,7 @@ double retard (int DragFunction, double DragCoefficient, double Velocity)
 		case G2:
 			if (vp > 1674 )
 			{
-				A = .0079470052136733   ;
+				A = .0079470052136733;
 				M = 1.36999902851493;
 			}
 			else if (vp > 1172 )
